@@ -1,0 +1,187 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #111;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.game-container {
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+}
+
+.header {
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+/* 标题图片样式 */
+.title-container {
+    margin: 0 auto 15px;
+    text-align: center;
+}
+
+.title-image {
+    max-width: 280px;
+    height: auto;
+    animation: imagePulse 2s infinite alternate;
+}
+
+@keyframes imagePulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.9;
+    }
+    100% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+}
+
+.score-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+canvas {
+    background-color: black;
+    border: 2px solid #444;
+    max-width: 100%;
+    margin-bottom: 15px;
+}
+
+.control-panel {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+/* 模态框样式 */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.modal-content {
+    background-color: #222;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 90%;
+}
+
+.modal h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #3498db;
+}
+
+.instruction-content,
+.rules-content {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.instruction-content h3 {
+    margin: 10px 0;
+    color: #f1c40f;
+}
+
+.instruction-content p,
+.rules-content p {
+    margin-bottom: 8px;
+}
+
+.hidden {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .header h1 {
+        font-size: 20px;
+    }
+    
+    .score-container {
+        font-size: 16px;
+    }
+    
+    button {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+}
+
+.phase-container {
+    margin-top: 8px;
+    text-align: center;
+    font-size: 16px;
+}
+
+/* 阶段样式 */
+.phase {
+    font-weight: bold;
+}
+
+.phase.normal {
+    color: #3498db;
+}
+
+.phase.rush {
+    color: #e74c3c;
+    animation: blink 1s infinite;
+}
+
+.phase.boss {
+    color: #9b59b6;
+    text-shadow: 0 0 5px #9b59b6;
+    font-size: 110%;
+    letter-spacing: 1px;
+}
+
+@keyframes blink {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
+} 

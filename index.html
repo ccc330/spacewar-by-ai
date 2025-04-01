@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网页版飞机大战</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <div class="title-container">
+                <img src="static/Title.png" alt="SPACEWAR" class="title-image">
+            </div>
+            <div class="score-container">
+                <div>分数: <span id="score">0</span></div>
+                <div>最高分: <span id="highScore">0</span></div>
+            </div>
+            <div class="phase-container">
+                <div>当前阶段: <span id="currentPhase">普通阶段</span></div>
+            </div>
+        </div>
+        
+        <canvas id="gameCanvas"></canvas>
+        
+        <div class="control-panel">
+            <button id="startBtn">开始游戏</button>
+            <button id="pauseBtn">暂停</button>
+            <button id="musicBtn">音乐开/关</button>
+            <button id="instructionBtn">操作说明</button>
+            <button id="rulesBtn">游戏规则</button>
+        </div>
+    </div>
+    
+    <!-- 游戏结束界面 -->
+    <div id="gameOver" class="modal hidden">
+        <div class="modal-content">
+            <h2>游戏结束</h2>
+            <p>最终得分: <span id="finalScore">0</span></p>
+            <button id="restartBtn">重新开始</button>
+        </div>
+    </div>
+    
+    <!-- 操作说明模态框 -->
+    <div id="instructionModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>操作说明</h2>
+            <div class="instruction-content">
+                <h3>电脑控制:</h3>
+                <p>方向键或WASD: 控制飞机移动</p>
+                <p>空格键: 发射子弹</p>
+                <p>P键: 暂停游戏</p>
+                
+                <h3>移动设备控制:</h3>
+                <p>触摸屏幕: 拖动飞机移动</p>
+                <p>移动时会自动发射子弹</p>
+            </div>
+            <button id="closeModal">关闭</button>
+        </div>
+    </div>
+    
+    <!-- 游戏规则模态框 -->
+    <div id="rulesModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>游戏规则</h2>
+            <div class="rules-content">
+                <p>1. 控制飞机躲避敌机</p>
+                <p>2. 发射子弹击落敌机获得分数</p>
+                <p>3. 不同类型敌机得分不同：</p>
+                <p>   - 普通敌机：10分</p>
+                <p>   - 高速敌机：30分（移动轨迹复杂多变）</p>
+                <p>   - 装甲敌机：30分（需多次击中）</p>
+                <p>4. 游戏分为普通阶段和暴走阶段交替进行</p>
+                <p>5. 每次暴走阶段后会出现不同阵型的敌人编队</p>
+                <p>6. 如果被敌机撞到，游戏结束</p>
+                <p>7. 游戏会记录并显示您的最高分</p>
+            </div>
+            <button id="closeRulesModal">关闭</button>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+    <script>
+        // 注册Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(reg => console.log('Service Worker 注册成功:', reg))
+                    .catch(err => console.log('Service Worker 注册失败:', err));
+            });
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,22 @@
+{
+    "name": "网页版飞机大战",
+    "short_name": "飞机大战",
+    "description": "HTML5 Canvas和JavaScript开发的简单飞机大战游戏",
+    "start_url": "index.html",
+    "display": "standalone",
+    "background_color": "#111111",
+    "theme_color": "#3498db",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "static/icon-192.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "static/icon-512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ]
+} 
