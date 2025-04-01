@@ -11,15 +11,6 @@
 - PWA支持，可离线运行
 - 移动端适配
 
-## 如何部署到GitHub Pages
-
-1. Fork或克隆此仓库
-2. 进入仓库设置 (Settings)
-3. 滚动到GitHub Pages部分
-4. 在Source下拉菜单中选择main分支
-5. 点击Save，等待GitHub处理
-6. 访问生成的URL（通常是 `https://你的用户名.github.io/仓库名/`）
-
 ## 离线使用
 
 本游戏支持PWA功能，可以添加到主屏幕离线使用：
@@ -49,7 +40,3 @@
 - Web Audio API处理游戏音效
 - Service Worker提供离线缓存
 - localStorage保存最高分记录
-
-## 自定义素材
-
-您可以自行替换assets目录中的图片和音效，只需保持文件名和格式一致。 
