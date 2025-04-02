@@ -30,6 +30,7 @@
             <button id="musicBtn">音乐开/关</button>
             <button id="instructionBtn">操作说明</button>
             <button id="rulesBtn">游戏规则</button>
+            <button id="leaderboardBtn">排行榜</button>
         </div>
     </div>
     
@@ -38,6 +39,14 @@
         <div class="modal-content">
             <h2>游戏结束</h2>
             <p>最终得分: <span id="finalScore">0</span></p>
+            <p>排名: <span id="playerRank">-</span></p>
+            <p>用户名: <span id="playerName">-</span></p>
+            <p>评价: <span id="playerRating" class="player-rating">-</span></p>
+            <div id="nameInputContainer">
+                <p>请输入用户名以保存分数:</p>
+                <input type="text" id="playerNameInput" maxlength="10" placeholder="输入用户名">
+                <button id="saveScoreBtn">保存分数</button>
+            </div>
             <button id="restartBtn">重新开始</button>
         </div>
     </div>
@@ -77,6 +86,29 @@
                 <p>7. 游戏会记录并显示您的最高分</p>
             </div>
             <button id="closeRulesModal">关闭</button>
+        </div>
+    </div>
+    
+    <!-- 排行榜模态框 -->
+    <div id="leaderboardModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>游戏排行榜</h2>
+            <div class="leaderboard-container">
+                <table id="leaderboardTable">
+                    <thead>
+                        <tr>
+                            <th>排名</th>
+                            <th>得分</th>
+                            <th>用户名</th>
+                            <th>评价</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody">
+                        <!-- 排行榜数据将在这里动态插入 -->
+                    </tbody>
+                </table>
+            </div>
+            <button id="closeLeaderboardModal">关闭</button>
         </div>
     </div>
     

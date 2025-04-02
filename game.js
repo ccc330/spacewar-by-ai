@@ -56,6 +56,24 @@ class SpacewarGame {
         this.bgmNodes = null; // 存储BGM的音频节点
         this.bgmPlaying = false; // BGM播放状态
         
+        // 排行榜系统
+        this.leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+        this.playerName = localStorage.getItem('playerName') || '';
+        
+        // 评价系统
+        this.ratings = [
+            { name: "传奇不朽", class: "rating-legendary" },    // 第1名
+            { name: "骑士精英", class: "rating-elite" },       // 第2-3名
+            { name: "灰烬君王", class: "rating-superior" },    // 第4-10名
+            { name: "灵魂收割", class: "rating-skilled" },     // 11-20%
+            { name: "薪火传承", class: "rating-average" },     // 21-30%
+            { name: "余火不熄", class: "rating-mediocre" },    // 31-40%
+            { name: "迷途旅者", class: "rating-struggling" },  // 41-50%
+            { name: "初入险境", class: "rating-novice" },      // 51-70%
+            { name: "命运凡人", class: "rating-amateur" },     // 71-90%
+            { name: "灰烬残渣", class: "rating-hapless" }      // 91-100%
+        ];
+        
         try {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         } catch (e) {
@@ -236,6 +254,21 @@ class SpacewarGame {
             if (e.target === document.getElementById('rulesModal')) {
                 document.getElementById('rulesModal').classList.add('hidden');
             }
+        });
+        
+        // 排行榜按钮
+        document.getElementById('leaderboardBtn').addEventListener('click', () => {
+            this.showLeaderboard();
+        });
+        
+        // 关闭排行榜弹窗
+        document.getElementById('closeLeaderboardModal').addEventListener('click', () => {
+            document.getElementById('leaderboardModal').classList.add('hidden');
+        });
+        
+        // 保存分数按钮
+        document.getElementById('saveScoreBtn').addEventListener('click', () => {
+            this.saveScore();
         });
         
         // 键盘控制
@@ -442,6 +475,7 @@ class SpacewarGame {
         this.gameRunning = true;
         this.gamePaused = false;
         this.player = new Player(this.canvas.width / 2 - 16, this.canvas.height - 50);
+        this.resetPlayerInfo();
         requestAnimationFrame(this.gameLoop.bind(this));
     }
     
@@ -459,6 +493,26 @@ class SpacewarGame {
         this.currentPhase = 'normal';
         this.phaseTime = 0;
         this.updatePhaseDisplay();
+    }
+    
+    // 重置玩家信息显示
+    resetPlayerInfo() {
+        // 显示名称输入框
+        document.getElementById('nameInputContainer').style.display = 'block';
+        
+        // 重置玩家评价信息
+        document.getElementById('playerRank').textContent = '-';
+        document.getElementById('playerRating').textContent = '-';
+        document.getElementById('playerRating').className = 'player-rating';
+        
+        // 如果有保存的用户名，则预填充
+        if (this.playerName) {
+            document.getElementById('playerNameInput').value = this.playerName;
+            document.getElementById('playerName').textContent = this.playerName;
+        } else {
+            document.getElementById('playerName').textContent = '未命名';
+            document.getElementById('playerNameInput').value = '';
+        }
     }
     
     // 切换暂停状态
@@ -868,8 +922,25 @@ class SpacewarGame {
             this.updateScoreDisplay();
         }
         
-        // 显示游戏结束界面
+        // 检查该用户是否已有记录
+        let existingScore = 0;
+        if (this.playerName) {
+            const existingEntry = this.leaderboard.find(entry => entry.name === this.playerName);
+            if (existingEntry) {
+                existingScore = existingEntry.score;
+            }
+        }
+        
+        // 更新游戏结束界面的玩家信息
         document.getElementById('finalScore').textContent = this.score;
+        
+        // 只有当当前分数比历史最高分高或者没有历史记录时才显示当前成绩的排名
+        this.updatePlayerInfo(Math.max(this.score, existingScore));
+        
+        // 显示名称输入框
+        document.getElementById('nameInputContainer').style.display = 'block';
+        
+        // 显示游戏结束界面
         document.getElementById('gameOver').classList.remove('hidden');
     }
     
@@ -1159,6 +1230,164 @@ class SpacewarGame {
         
         // 继续下一帧
         requestAnimationFrame(this.gameLoop.bind(this));
+    }
+    
+    // 保存分数到排行榜
+    saveScore() {
+        const nameInput = document.getElementById('playerNameInput');
+        const name = nameInput.value.trim();
+        
+        if (name.length === 0) {
+            alert('请输入用户名');
+            return;
+        }
+        
+        // 保存用户名
+        this.playerName = name;
+        localStorage.setItem('playerName', name);
+        
+        // 检查用户是否已存在于排行榜中
+        const existingIndex = this.leaderboard.findIndex(entry => entry.name === name);
+        
+        if (existingIndex !== -1) {
+            // 用户已存在，检查是否需要更新分数
+            if (this.score > this.leaderboard[existingIndex].score) {
+                // 只有新分数更高时才更新
+                this.leaderboard[existingIndex].score = this.score;
+                this.leaderboard[existingIndex].date = new Date().toISOString();
+            }
+        } else {
+            // 用户不存在，添加新记录
+            this.leaderboard.push({
+                name: name,
+                score: this.score,
+                date: new Date().toISOString()
+            });
+        }
+        
+        // 按分数排序（从高到低）
+        this.leaderboard.sort((a, b) => b.score - a.score);
+        
+        // 如果排行榜太长，只保留前50条记录
+        if (this.leaderboard.length > 50) {
+            this.leaderboard = this.leaderboard.slice(0, 50);
+        }
+        
+        // 保存排行榜到localStorage
+        localStorage.setItem('leaderboard', JSON.stringify(this.leaderboard));
+        
+        // 隐藏名称输入框，刷新排行榜显示
+        document.getElementById('nameInputContainer').style.display = 'none';
+        this.updatePlayerInfo();
+        
+        // 提示保存成功
+        alert('分数保存成功！');
+    }
+    
+    // 获取玩家当前排名
+    getPlayerRank(scoreToCheck) {
+        // 使用传入的分数或当前游戏分数
+        const score = scoreToCheck !== undefined ? scoreToCheck : this.score;
+        
+        // 如果排行榜为空，返回1
+        if (this.leaderboard.length === 0) return 1;
+        
+        // 否则寻找当前分数的排名
+        for (let i = 0; i < this.leaderboard.length; i++) {
+            if (score >= this.leaderboard[i].score) {
+                return i + 1;
+            }
+        }
+        
+        // 如果比所有记录都低，返回排行榜长度+1
+        return this.leaderboard.length + 1;
+    }
+    
+    // 根据排名获取评价
+    getRatingByRank(rank) {
+        const totalPlayers = Math.max(this.leaderboard.length + 1, 10); // 至少假设有10名玩家
+        
+        if (rank === 1) return this.ratings[0];
+        if (rank <= 3) return this.ratings[1];
+        if (rank <= 10) return this.ratings[2];
+        
+        // 计算剩余等级
+        const percentile = (rank / totalPlayers) * 100;
+        
+        if (percentile <= 20) return this.ratings[3];
+        if (percentile <= 30) return this.ratings[4];
+        if (percentile <= 40) return this.ratings[5];
+        if (percentile <= 50) return this.ratings[6];
+        if (percentile <= 70) return this.ratings[7];
+        if (percentile <= 90) return this.ratings[8];
+        return this.ratings[9];
+    }
+    
+    // 显示排行榜
+    showLeaderboard() {
+        const leaderboardBody = document.getElementById('leaderboardBody');
+        leaderboardBody.innerHTML = '';
+        
+        // 只显示前10名
+        const topTen = this.leaderboard.slice(0, 10);
+        
+        // 如果没有记录，显示提示
+        if (topTen.length === 0) {
+            const emptyRow = document.createElement('tr');
+            emptyRow.innerHTML = '<td colspan="4">暂无记录</td>';
+            leaderboardBody.appendChild(emptyRow);
+        } else {
+            // 添加排行榜数据
+            topTen.forEach((entry, index) => {
+                const rank = index + 1;
+                const rating = this.getRatingByRank(rank);
+                
+                const row = document.createElement('tr');
+                
+                // 设置当前用户的样式
+                if (entry.name === this.playerName) {
+                    row.classList.add('current-player');
+                }
+                
+                row.innerHTML = `
+                    <td>${rank}</td>
+                    <td>${entry.score}</td>
+                    <td>${entry.name}</td>
+                    <td class="${rating.class}">${rating.name}</td>
+                `;
+                leaderboardBody.appendChild(row);
+            });
+        }
+        
+        document.getElementById('leaderboardModal').classList.remove('hidden');
+    }
+    
+    // 更新玩家信息（游戏结束界面）
+    updatePlayerInfo(scoreToCheck) {
+        // 使用传入的分数或当前游戏分数
+        const score = scoreToCheck !== undefined ? scoreToCheck : this.score;
+        
+        const rank = this.getPlayerRank(score);
+        const rating = this.getRatingByRank(rank);
+        
+        document.getElementById('playerRank').textContent = rank;
+        document.getElementById('playerRating').textContent = rating.name;
+        document.getElementById('playerRating').className = `player-rating ${rating.class}`;
+        
+        // 如果玩家已有名字，则显示，否则显示"未命名"
+        if (this.playerName) {
+            document.getElementById('playerName').textContent = this.playerName;
+            document.getElementById('playerNameInput').value = this.playerName;
+        } else {
+            document.getElementById('playerName').textContent = "未命名";
+        }
+        
+        // 如果分数比历史最高分高，则更新最高分
+        if (score > this.highScore) {
+            this.highScore = score;
+            localStorage.setItem('highScore', this.highScore);
+            this.updateScoreDisplay();
+        }
     }
 }
 
